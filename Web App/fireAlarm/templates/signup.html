@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block body %}
+<center>
+<div  style="margin-left:400px;margin-top:100px;width:450px;height:400px;padding-top:30px;border: 2px solid black;position:absolute;">
+  <form  action="" method="post">
+    {% csrf_token %}
+    <div class="forinput">
+      <label class="left" for="username">Username</label><br>
+      <!--<input type="text" name="username" ><br>-->
+      {{form.username}}
+     </div>
+
+      <div class="forinput">
+        <label class="left" for="email">Email</label><br>
+        <!--<input type="email" name="email" ><br>-->
+        {{form.email}}
+       </div>
+     <div class="forinput">
+       <label class="left" for="password1">Password</label><br>
+       <!--<input type="password" name="password" ><br>-->
+       {{form.password1}}
+     </div>
+     <div class="forinput">
+       <label class="left" for="password2">Confirm Password</label><br>
+       <!--<input type="password" name="password" ><br>-->
+       {{form.password2}}
+     </div>
+      <div class="forinput same">
+          <button class="btn btn-success btn-lg" type="submit" name="button">Submit</button>
+      </div>
+      <div class="same" style="position:absolute;">
+        <a href="loginpage" >Already have an account</a>
+      </div>
+  </form>
+  </div>
+{{form.errors}}
+</center>
+{% block style %}
+<style >
+  .same{
+    float:left;
+    display:inline;
+  }
+  .forinput{
+    margin-top:20px;
+    padding-left:25px;
+    text-align:left;
+
+    }
+
+    .left{
+      margin-left:0px;
+    }
+    body{
+      background-color:#f2f2f2;
+    }
+</style>
+{% endblock style %}
+
+{% endblock body %}

@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-database.js"></script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <title>FIRE ALARM SYS</title>
+  </head>
+  <body>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">FIRE ALARM SYSTEM🔥</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                
+                </ul>
+                <a class="nav-link" href="{% url 'history' %}">HISTORY</a>
+                <a class="nav-link" href="{% url 'graph' %}">GRAPH</a>
+                <a class="nav-link" href="{% url 'logoutuser' %}">LOGOUT</a>
+            </div>
+            
+
+                
+            
+        </div>
+    </nav>
+
+    <div style="border: solid white;color: white;">
+        
+        <span id="alert_msg" style="margin-left: 40%;background-color: rgb(175, 7, 7);font-weight: 600;border-radius: 3px;">
+          
+          
+        </span>
+      </div>
+    <div style="margin-left: 130px;margin-top: 120px;margin-right:20px;padding:30px;color: black;font-size: 30px;font-family: 'Courier New', Courier, monospace;float: left;border: 2px solid white;width:500px;background:#C4C4C4;border-radius:15px;">
+        {% comment %} <div style="color: blue;font-weight: bold;">Temperature sensor value:<span id="temp"></span></div> {% endcomment %}
+        <div style="color: black;font-weight: bold;">Smoke sensor value1:<span id="smoke1"></span></div>
+        <div style="color: blue;font-weight: bold;">Flame sensor value1:<span id="flame1"></span></div>
+    </div>
+
+    <div style="padding:30px;margin-right: 170px;margin-top: 120px;color: black;font-size: 30px;font-family: 'Courier New', Courier, monospace;float: right;border: 2px solid white;width:500px;background:#C4C4C4;border-radius:15px">
+        {% comment %} <div style="color: blue;font-weight: bold;">Temperature sensor value:<span id="temp"></span></div> {% endcomment %}
+        <div style="color: black;font-weight: bold;">Smoke sensor value2:<span id="smoke2"></span></div>
+        <div style="color: blue;font-weight: bold;">Flame sensor value2:<span id="flame2"></span></div>
+    </div>
+
+    <!--<div style="padding:30px;margin-left: 410px;margin-top: 60px;margin-right:20px;color: black;font-size: 30px;font-family: 'Courier New', Courier, monospace;float: left;border: 2px solid white;width:480px;background:#C4C4C4;border-radius:15px;">
+        {% comment %} <div style="color: blue;font-weight: bold;">Temperature sensor value:<span id="temp"></span></div> {% endcomment %}
+        <div style="color: black;font-weight: bold;">Smoke sensor value3:<span id="smoke3"></span></div>
+        <div style="color: blue;font-weight: bold;">Flame sensor value3:<span id="flame3"></span></div>
+    </div>-->
+    <script>
+
+        function sendalert(){
+         var temp_data=document.getElementById("alert_msg").innerHTML="Warning: FIRE DETECTED🔥🔥🔥";
+        } 
+        
+        function send_agarbatti_alert(){
+            var temp_data=document.getElementById("alert_msg").innerHTML="Warning: AGARBATTI IS LIT";
+        }
+
+        function send_lpg_alert(){
+            var temp_data=document.getElementById("alert_msg").innerHTML="Warning: LPG GAS LEAKAGE";
+        }
+       
+        function remove_warning(){
+         var temp_data=document.getElementById("alert_msg").innerHTML="";
+        }
+        var prev=1,loop=1;
+        function showHistory(){
+             var myData=[prev,loop];
+             console.log("curr point to resume",myData)
+             localStorage.setItem( 'resume', myData);
+       
+        }
+       function sendToDashboard(sval1,fval1,sval2,fval2){
+           //var temp_data=document.getElementById("temp").innerHTML=val1;
+             var gas_data=document.getElementById("smoke1").innerHTML=sval1;
+             var flame_data=document.getElementById("flame1").innerHTML=fval1;
+
+             var gas_data=document.getElementById("smoke2").innerHTML=sval2;
+             var flame_data=document.getElementById("flame2").innerHTML=fval2;
+
+             //var gas_data=document.getElementById("smoke3").innerHTML=sval3;
+             //var flame_data=document.getElementById("flame3").innerHTML=fval3;
+             console.log("dashboard updated!!!")
+             
+         }
+       
+         function sendEmail(smoke1,flame1,smoke2,flame2){
+            Email.send({
+                Host : "smtp.gmail.com",
+                Username : "iit2019234@iiita.ac.in",
+                Password : "Pravallika@26",
+                To : ["{{email}}"],
+                From : "iit2019234@iiita.ac.in",
+                Subject : "FIRE ALERT🔥🔥🔥",
+                Body : "Warning: This is fire alert. Fire is detected!!!<br/> Be cautious and take necessary actions...<br/> "+
+                "flame_value1: "+flame1+"<br/>smoke_value1: "+smoke1+"<br/>flame_value2: "+flame2+"<br/>smoke_value2: "+smoke2
+            }).then(
+                //message => alert(message)
+                console.log("Mail sent successfully!!!")
+            );
+        }
+       // Your web app's Firebase configuration
+       var firebaseConfig = {
+       // YourCode
+           apiKey: "AIzaSyBV3jP5cl1AVP3HgO6_1J_wrjyffqQUfko",
+           authDomain: "iotproject-2800f.firebaseapp.com",
+           databaseURL: "https://iotproject-2800f-default-rtdb.firebaseio.com",
+           projectId: "iotproject-2800f",
+           storageBucket: "iotproject-2800f.appspot.com",
+           messagingSenderId: "863247827424",
+           appId: "1:863247827424:web:ba640e5eabf0b412062b85",
+           measurementId: "G-727CF3R175"
+       };
+       // Initialize Firebase
+       firebase.initializeApp(firebaseConfig);
+       var loop=1;
+       function sleep(ms) {
+           return new Promise(resolve => setTimeout(resolve, ms));
+       }
+       async function data_to_firebase(){
+         prev=1;
+           while(1){
+               console.log(loop);
+               loop++;
+           // Add data
+           //var temperature_value=Math.random()*101;
+           //general -> 30 - 100
+            var smoke_value1=30+Math.round(Math.random()*71);
+            var flame_value1=1;
+            var time=new Date();
+            console.log(time)
+            var smoke_value2=smoke_value1+Math.round(Math.random()*5);
+            var flame_value2=1;
+            
+
+            //general fire 70 - 100
+            if(loop>=10 && loop<=20){
+                smoke_value1=70+Math.round(Math.random()*30);
+                flame_value1=0;
+                var smoke_value2=smoke_value1+Math.round(Math.random()*5);
+                var flame_value2=0;
+                
+            }
+
+
+            //agarbatti
+            //120 - 170
+            if(loop>=50 && loop<=60){
+                smoke_value1=120+Math.round(Math.random()*51);
+                flame_value1=1;
+                var smoke_value2=smoke_value1+Math.round(Math.random()*5);
+                var flame_value2=1;
+                
+            }
+
+            //lpg
+            //400 - 600
+            if(loop>=100 && loop<=110){
+                smoke_value1=400+Math.round(Math.random()*30);
+                flame_value1=1;
+                var smoke_value2=smoke_value1+Math.round(Math.random()*5);
+                var flame_value2=1;
+                
+            }
+
+            
+            let obj = {
+                smoke_value1: smoke_value1,
+                flame_value1: flame_value1,
+
+                smoke_value2: smoke_value2,
+                flame_value2: flame_value2,
+
+                //smoke_value3: smoke_value3,
+                //flame_value3: flame_value3,
+
+                curr_time:time
+            };
+            var str="sensordata/"+time;
+           firebase.database().ref(str).set(obj);
+           //var str="15-itebVVyWrgPlr5qjMDYk3LNG55fhygj66YDEG9pdw/Sheet1/"+"Fri Apr 15 2022 13:01:08 GMT+0530 (India Standard Time)";
+           //var time=new Date();
+           //console.log(time)
+
+           
+           //console.log(str)
+           console.log(str)
+           console.log("check")
+           //console.log(str2==str)
+            //console.log("date now: ",new Date());
+            
+           //firebase.database().ref(str).set(obj);
+           // if(temperature_value>15 && gas_value>=15 && flame_value>=18){
+           //     sendEmail(temperature_value,gas_value,flame_value);
+           // }
+           //if(obj!=undefined){
+            
+        //sendEmail(3,3,3,3);
+           firebase.database().ref(str).on("value", (sanpshot) => {
+               console.log("received: ",sanpshot.val());
+               if(sanpshot.val()!=undefined){
+                    console.log(sanpshot.val().smoke_value1,sanpshot.val().flame_value1)
+                    console.log(sanpshot.val().smoke_value2,sanpshot.val().flame_value2)
+                   // console.log(sanpshot.val().smoke_value3,sanpshot.val().flame_value3)
+                    sendToDashboard(Math.round(sanpshot.val().smoke_value1),Math.round(sanpshot.val().flame_value1),
+                                    Math.round(sanpshot.val().smoke_value2),Math.round(sanpshot.val().flame_value2));
+
+
+                    //alert condition                
+                    if(Math.round(sanpshot.val().smoke_value1)>70 && Math.round(sanpshot.val().smoke_value2)>70 &&
+                    (Math.round(sanpshot.val().flame_value1)+Math.round(sanpshot.val().flame_value2))==0){
+                        var mail="{{email}}"
+                        console.log("send mail...!!!",mail)    
+                        sendEmail(Math.round(sanpshot.val().smoke_value1),Math.round(sanpshot.val().flame_value1),
+                        Math.round(sanpshot.val().smoke_value2),Math.round(sanpshot.val().flame_value2));
+                        sendalert();
+                    }
+                    else if(loop>=50 && loop<=60 && Math.round(sanpshot.val().smoke_value1)>120 && Math.round(sanpshot.val().smoke_value2)>120 && (Math.round(sanpshot.val().flame_value1)+Math.round(sanpshot.val().flame_value2)==2)){
+                        send_agarbatti_alert();
+                    }
+                    else if(loop>=100 && loop<=110 && Math.round(sanpshot.val().smoke_value1)>400 && Math.round(sanpshot.val().smoke_value2)>400 && (Math.round(sanpshot.val().flame_value1)+Math.round(sanpshot.val().flame_value2)==2)){
+                        send_lpg_alert();
+                    }
+                    else{
+                        remove_warning();
+                    }
+                }
+           });
+           await sleep(1* 1000);
+           //loop++;
+        //}
+       
+           }
+       }
+       data_to_firebase(); 
+       
+       
+       
+    </script>
+        
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+</html>

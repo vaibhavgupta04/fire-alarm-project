@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+<meta charset="utf-8">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+
+</head>
+
+<body>
+    <h2 style="font-family: 'Pacifico', cursive;font-size:50px;color:black;padding-left:500px;">PIE CHART</h2>
+    <div id="container" style="width: 65%;margin:auto;padding-top:70px;">
+        
+        <canvas id="pie-chart"></canvas>
+      </div>
+    
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+      <script>
+    
+        var config = {
+          type: 'pie',
+          data: {
+            datasets: [{
+              data: {{ val }},
+              backgroundColor: [
+                '#242582', '#F64C72', '#553D67', '#C0C0C0', '#D3D3D3'
+              ],
+              label: 'Population'
+            }],
+            labels: ["smoke1","smoke2" ]
+          },
+          options: {
+            responsive: true
+          }
+        };
+    
+        window.onload = function() {
+          var ctx = document.getElementById('pie-chart').getContext('2d');
+          window.myPie = new Chart(ctx, config);
+        };
+    
+      </script>
+</body>
+</html>
